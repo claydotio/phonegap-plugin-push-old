@@ -103,8 +103,16 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
         PushPlugin.setApplicationIconBadgeNumber(getApplicationContext(), 0);
       }
 
+      String contextId;
+      try {
+        JSONObject payload = new JSONObject((String) extras.getString("payload"));
+        contextId = payload.getString("contextId");
+      } catch (Exception e) {
+        contextId = "";
+      }
+
       // if we are in the foreground and forceShow is `false` only send data
-      if (!forceShow && PushPlugin.isInForeground()) {
+      if (PushPlugin.isInForeground() && (!forceShow || contextId.equals(prefs.getString(CONTEXT_ID, null)))) {
         Log.d(LOG_TAG, "foreground");
         extras.putBoolean(FOREGROUND, true);
         extras.putBoolean(COLDSTART, false);
@@ -749,7 +757,7 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
         }
       }
       if (results.length == 4) {
-        mBuilder.setLights(Color.argb(results[0], results[1], results[2], results[3]), 500, 500);
+        mBuilder.setLights(Color.argb(results[0], results[1], results[2], results[3]), 500, 2000);
       } else {
         Log.e(LOG_TAG, "ledColor parameter must be an array of length == 4 (ARGB)");
       }

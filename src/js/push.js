@@ -132,6 +132,22 @@ class PushNotification {
     exec(successCallback, errorCallback, 'PushNotification', 'unsubscribe', [topic]);
   }
 
+  setContextId(successCallback, errorCallback, contextId) {
+    if (!errorCallback) { errorCallback = function() {}; }
+
+    if (typeof errorCallback !== 'function')  {
+        console.log('PushNotification.setContextId failure: failure parameter not a function');
+        return;
+    }
+
+    if (typeof successCallback !== 'function') {
+        console.log('PushNotification.setContextId failure: success callback parameter must be a function');
+        return;
+    }
+
+    exec(successCallback, errorCallback, 'PushNotification', 'setContextId', [contextId]);
+  }
+
   /**
    * Call this to set the application icon badge
    */

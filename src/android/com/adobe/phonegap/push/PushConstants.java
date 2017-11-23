@@ -41,6 +41,8 @@ public interface PushConstants {
   public static final String STYLE_TEXT = "text";
   public static final String BADGE = "badge";
   public static final String INITIALIZE = "init";
+  public static final String CONTEXT_ID = "contextId";
+  public static final String SET_CONTEXT_ID = "setContextId";
   public static final String SUBSCRIBE = "subscribe";
   public static final String UNSUBSCRIBE = "unsubscribe";
   public static final String UNREGISTER = "unregister";

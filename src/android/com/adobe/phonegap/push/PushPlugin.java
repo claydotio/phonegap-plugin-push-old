@@ -267,6 +267,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
               editor.remove(CLEAR_BADGE);
               editor.remove(CLEAR_NOTIFICATIONS);
               editor.remove(FORCE_SHOW);
+              editor.remove(CONTEXT_ID);
               editor.remove(SENDER_ID);
               editor.commit();
             }
@@ -323,6 +324,19 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
           Log.v(LOG_TAG, "clearAllNotifications");
           clearAllNotifications();
           callbackContext.success();
+        }
+      });
+    } else if (SET_CONTEXT_ID.equals(action)){
+      // Subscribing for a topic
+      cordova.getThreadPool().execute(new Runnable() {
+        public void run() {
+          try {
+            String contextId = data.getString(0);
+            setContextId(contextId);
+            callbackContext.success();
+          } catch (JSONException e) {
+            callbackContext.error(e.getMessage());
+          }
         }
       });
     } else if (SUBSCRIBE.equals(action)) {
@@ -487,6 +501,29 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
     final NotificationManager notificationManager = (NotificationManager) cordova.getActivity()
         .getSystemService(Context.NOTIFICATION_SERVICE);
     notificationManager.cancelAll();
+  }
+
+  /**
+  * Transform `topic name` to `topic path`
+  * Normally, the `topic` inputed from end-user is `topic name` only.
+  * We should convert them to GCM `topic path`
+  * Example:
+  *  when	    topic name = 'my-topic'
+  *  then	    topic path = '/topics/my-topic'
+  *
+  * @param    String  topic The topic name
+  * @return           The topic path
+  */
+  private String getTopicPath(String topic)
+  {
+    return "/topics/" + topic;
+  }
+
+  private void setContextId(String contextId) {
+    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(COM_ADOBE_PHONEGAP_PUSH, Context.MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPref.edit();
+    editor.putString(CONTEXT_ID, contextId);
+    editor.commit();
   }
 
   private void subscribeToTopics(JSONArray topics, String registrationToken) {
